@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block page_content %}
+<div class="row">
+    <ul class="list-inline">
+    {% for item in breadcrumb: %}
+        <li><a href="{{ url_for('main.node', nid=item.nid) }}">{{ item.title }}</a></li>
+    {% endfor %}
+    </ul>
+    <h1>
+        {{ title }}
+        <small>{{ created|datestamp }}</small>
+    </h1>
+    {{ body|safe }}
+    <ul>
+        {% for child in children %}
+        <li><a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
