@@ -8,18 +8,22 @@
     {% endfor %}
     </ul>
     <h1>
-        {{ title }}
-        <small>{{ created|datestamp }}</small>
+        {{ node.title }}
+        <small>{{ node.created|datestamp }}</small>
     </h1>
-    <a href="{{ url_for('main.node_edit', nid=nid) }}" class="btn btn-default" role="button">Edit</a>
-    <a href="{{ url_for('main.node_edit', nid=nid) }}" class="btn btn-default" role="button">Add</a>
-    {% if children|length == 0 %}
-        <a href="{{ url_for('main.node_delete', nid=nid) }}" class="btn btn-default" role="button">Delete</a>
+    <a href="{{ url_for('main.node_edit', nid=node.nid, pid=node.parent_id) }}" class="btn btn-default" role="button">
+        Edit
+    </a>
+    <a href="{{ url_for('main.node_add', pid=node.nid) }}" class="btn btn-default" role="button">
+        Add
+    </a>
+    {% if node.children|length == 0 %}
+        <a href="{{ url_for('main.node_delete', nid=node.nid) }}" class="btn btn-default" role="button">Delete</a>
     {% endif %}
     <hr>
-    {{ body|safe }}
+    {{ node.body|reformat_body|safe }}
     <ul>
-        {% for child in children %}
+        {% for child in node.children|children_sorted %}
         <li><a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>
         {% endfor %}
     </ul>

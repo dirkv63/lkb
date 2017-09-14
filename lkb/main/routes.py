@@ -47,12 +47,7 @@ def pwd_update():
 @main.route('/')
 @login_required
 def index():
-    # This will return the most recent posts
-    node_list = ds.get_recent_posts()
-    params = dict(
-        node_list=node_list
-    )
-    return render_template('recent_posts.html', **params)
+    return nodelist("created")
 
 
 @main.route('/node/<nid>')
@@ -60,6 +55,7 @@ def index():
 def node(nid):
     node_obj = ds.get_node_attribs(nid=nid)
     bc = ds.get_breadcrumb(nid=nid)
+    """
     params = dict(
         nid=node_obj.nid,
         title=node_obj.title,
@@ -68,12 +64,17 @@ def node(nid):
         children=sorted(node_obj.children, key=lambda child: child.title),
         created=node_obj.created
     )
+    """
+    params = dict(
+        node=node_obj,
+        breadcrumb=bc
+    )
     return render_template('node.html', **params)
 
 
-@main.route('/node_add', methods=['GET', 'POST'])
+@main.route('/node_add/<pid>', methods=['GET', 'POST'])
 @login_required
-def node_add(nid=None):
+def node_add(pid, nid=None):
     form = NodeAdd()
     title = ""
     if request.method == 'POST':
@@ -99,13 +100,14 @@ def node_add(nid=None):
             form.parent_id.data = node_vals.parent_id
         else:
             title = "Create Node"
+            form.parent_id.data = pid
     return render_template('node_add.html', form=form, title=title)
 
 
-@main.route('/node_edit/<nid>', methods=['GET', 'POST'])
+@main.route('/node_edit/<pid>/<nid>', methods=['GET', 'POST'])
 @login_required
-def node_edit(nid):
-    return node_add(nid)
+def node_edit(pid, nid):
+    return node_add(pid, nid)
 
 
 @main.route('/node_delete/<nid>', methods=['GET'])
@@ -114,6 +116,27 @@ def node_delete(nid):
     flash('Node {nid} deleted'.format(nid=nid), 'warning')
     ds.Node.delete(nid)
     return index()
+
+
+@main.route('/nodelist/<order>', methods=['GET'])
+@login_required
+def nodelist(order="created"):
+    """
+    Returns the nodes in an ordered list.
+
+    :param order: Specifies the order: created (default, most recent first), modified (most recent modified first)
+
+    :return:
+    """
+    title = "Recent Nodes"
+    if order == "modified":
+        title = "Last Modified"
+    node_list = ds.get_node_list(order)
+    params = dict(
+        node_list=node_list,
+        title=title
+    )
+    return render_template('node_list.html', **params)
 
 
 @main.errorhandler(404)

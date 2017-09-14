@@ -159,11 +159,17 @@ def get_node_attribs(nid):
     return node
 
 
-def get_recent_posts():
+def get_node_list(order="created"):
     """
     This method will return the most recent posts.
 
+    :param order: This specifies the order for the list. Options: created (default), modified
+
     :return:
     """
-    node_list = Node.query.order_by(Node.created.desc()).limit(15).all()
+    if order == "created":
+        node_order = Node.created.desc()
+    elif order == "modified":
+        node_order = Node.modified.desc()
+    node_list = Node.query.order_by(node_order).limit(15).all()
     return node_list

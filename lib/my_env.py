@@ -77,6 +77,7 @@ def reformat_body(string, is_xhtml=True):
     This function will replace \n with <br />.
     However don't do this around valid html identifiers.
     From Drupal - additional info on http://www.php2python.com/wiki/function.reformat_body/
+    This is used as a Jinja2 filter.
 
     :param string:
 
@@ -96,6 +97,9 @@ def reformat_body(string, is_xhtml=True):
     else:
         return string.replace('\n', '<br>\n')
 
+
+def children_sorted(children):
+    return sorted(children, key=lambda child: child.title)
 
 def fix_urls(text):
     """

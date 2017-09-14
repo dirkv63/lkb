@@ -38,6 +38,8 @@ def create_app(config_name):
 
     # add Jinja Filters
     app.jinja_env.filters['datestamp'] = my_env.datestamp
+    app.jinja_env.filters['reformat_body'] = my_env.reformat_body
+    app.jinja_env.filters['children_sorted'] = my_env.children_sorted
 
     # configure production logging of errors
     """
