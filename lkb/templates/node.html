@@ -11,6 +11,12 @@
         {{ title }}
         <small>{{ created|datestamp }}</small>
     </h1>
+    <a href="{{ url_for('main.node_edit', nid=nid) }}" class="btn btn-default" role="button">Edit</a>
+    <a href="{{ url_for('main.node_edit', nid=nid) }}" class="btn btn-default" role="button">Add</a>
+    {% if children|length == 0 %}
+        <a href="{{ url_for('main.node_delete', nid=nid) }}" class="btn btn-default" role="button">Delete</a>
+    {% endif %}
+    <hr>
     {{ body|safe }}
     <ul>
         {% for child in children %}

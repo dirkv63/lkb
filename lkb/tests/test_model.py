@@ -45,5 +45,22 @@ class TestModelGraph(unittest.TestCase):
         # Test Jinja filter for datestamp
         self.assertEqual(my_env.datestamp(1499999999), "14/07/17 04:39")
 
+    def test_node_modify(self):
+        # Test Node Add to parent 854 (CA Unicenter)
+        params = dict(
+            title="Test Node",
+            body="Text with test Node. Abracadabra for search purpuse.",
+            parent_id=854
+        )
+        nid = ds.Node.add(**params)
+        print("Node: {nid}".format(nid=nid))
+        node = ds.get_node_attribs(nid)
+        self.assertTrue(isinstance(node, ds.Node))
+        self.assertTrue('Abracadabra' in node.body)
+        # Now try to modify the node
+        params["body"] = "Now remove special string and add kweepeer instead."
+        params["nid"] = nid
+        ds.Node.edit(**params)
+
 if __name__ == "__main__":
     unittest.main()

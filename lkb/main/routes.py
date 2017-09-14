@@ -61,6 +61,7 @@ def node(nid):
     node_obj = ds.get_node_attribs(nid=nid)
     bc = ds.get_breadcrumb(nid=nid)
     params = dict(
+        nid=node_obj.nid,
         title=node_obj.title,
         body=my_env.reformat_body(node_obj.body),
         breadcrumb=bc,
@@ -68,6 +69,51 @@ def node(nid):
         created=node_obj.created
     )
     return render_template('node.html', **params)
+
+
+@main.route('/node_add', methods=['GET', 'POST'])
+@login_required
+def node_add(nid=None):
+    form = NodeAdd()
+    title = ""
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            node_vals = dict(
+                title=form.title.data,
+                body=form.body.data,
+                parent_id=form.parent_id.data
+            )
+            if nid:
+                node_vals['nid'] = nid
+                ds.Node.edit(**node_vals)
+                flash('Node modified', 'info')
+            else:
+                ds.Node.add(**node_vals)
+                flash('Node added', 'info')
+    else:
+        if nid:
+            title = "Edit Node"
+            node_vals = ds.Node.query.filter_by(nid=nid).first()
+            form.title.data = node_vals.title
+            form.body.data = node_vals.body
+            form.parent_id.data = node_vals.parent_id
+        else:
+            title = "Create Node"
+    return render_template('node_add.html', form=form, title=title)
+
+
+@main.route('/node_edit/<nid>', methods=['GET', 'POST'])
+@login_required
+def node_edit(nid):
+    return node_add(nid)
+
+
+@main.route('/node_delete/<nid>', methods=['GET'])
+@login_required
+def node_delete(nid):
+    flash('Node {nid} deleted'.format(nid=nid), 'warning')
+    ds.Node.delete(nid)
+    return index()
 
 
 @main.errorhandler(404)

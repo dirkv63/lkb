@@ -1,3 +1,4 @@
+import time
 from . import db, lm
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,7 +13,7 @@ class Node(db.Model):
     Relationship type is called: Adjacency list.
     """
     __tablename__ = "node"
-    nid = db.Column(db.Integer, primary_key=True)
+    nid = db.Column(db.Integer, primary_key=True, autoincrement=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('node.nid'), nullable=False)
     created = db.Column(db.Integer, nullable=False)
     modified = db.Column(db.Integer, nullable=False)
@@ -23,6 +24,32 @@ class Node(db.Model):
                                backref=db.backref('parent', remote_side=[nid])
                                )
 
+    @staticmethod
+    def add(**params):
+        params['created'] = int(time.time())
+        params['modified'] = params['created']
+        node_inst = Node(**params)
+        db.session.add(node_inst)
+        db.session.commit()
+        db.session.refresh(node_inst)
+        return node_inst.nid
+
+    @staticmethod
+    def edit(**params):
+        node_inst = db.session.query(Node).filter_by(nid=params['nid']).first()
+        print(node_inst.body)
+        node_inst.title = params['title']
+        node_inst.body = params['body']
+        node_inst.modified = int(time.time())
+        db.session.commit()
+        return
+
+    @staticmethod
+    def delete(nid):
+        node_inst = Node.query.filter_by(nid=nid).one()
+        db.session.delete(node_inst)
+        db.session.commit()
+        return True
 
 class History(db.Model):
     """

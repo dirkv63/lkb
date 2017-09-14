@@ -47,6 +47,7 @@ def init_loghandler(scriptname, logdir, loglevel):
     logger = logging.getLogger()
     level = logging.getLevelName(loglevel)
     logger.setLevel(level)
+    # logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
     # Create Console Handler
     ch = logging.StreamHandler()
     ch.setLevel(level)

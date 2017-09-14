@@ -13,6 +13,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "sqlite:///C:\\Development\\python\\iaas\\lkb\\data\\lkb.db"
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_ECHO = False
     # pythonanywhere disconnects clients after 5 minutes idle time. Set pool_recycle to avoid disconnection
     # errors in the log: https://help.pythonanywhere.com/pages/UsingSQLAlchemywithMySQL (from: PythonAnywhere -
     # some tips for specific web frameworks: Flask
