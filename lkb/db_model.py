@@ -1,3 +1,5 @@
+import logging
+import sqlite3
 import time
 from . import db, lm
 from flask_login import UserMixin
@@ -28,10 +30,13 @@ class Node(db.Model):
     def add(**params):
         params['created'] = int(time.time())
         params['modified'] = params['created']
+        params['revcnt'] = 1
         node_inst = Node(**params)
         db.session.add(node_inst)
         db.session.commit()
         db.session.refresh(node_inst)
+        # Add node to the Search Index
+        # ss.node_add(node_inst)
         return node_inst.nid
 
     @staticmethod
@@ -41,6 +46,7 @@ class Node(db.Model):
         node_inst.title = params['title']
         node_inst.body = params['body']
         node_inst.modified = int(time.time())
+        node_inst.revcnt += 1
         db.session.commit()
         return
 
@@ -51,6 +57,7 @@ class Node(db.Model):
         db.session.commit()
         return True
 
+
 class History(db.Model):
     """
     Table remembering which node is selected when.
@@ -59,6 +66,17 @@ class History(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nid = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.Integer, nullable=False)
+
+    @staticmethod
+    def add(nid):
+        params = dict(
+            timestamp=int(time.time()),
+            nid=nid
+        )
+        hist_inst = History(**params)
+        db.session.add(hist_inst)
+        db.session.commit()
+        return
 
 
 class User(UserMixin, db.Model):
@@ -167,9 +185,30 @@ def get_node_list(order="created"):
 
     :return:
     """
-    if order == "created":
-        node_order = Node.created.desc()
-    elif order == "modified":
+    node_order = Node.created.desc()
+    if order == "modified":
         node_order = Node.modified.desc()
     node_list = Node.query.order_by(node_order).limit(15).all()
     return node_list
+
+
+def search_term(term):
+    """
+    Trying to work from https://www.sqlite.org/fts5.html
+    :param term:
+    :return:
+    """
+    sc = sqlite3.connect(':memory:')
+    with sc:
+        sc.row_factory = sqlite3.Row
+        sc_cur = sc.cursor()
+        query = "CREATE VIRTUAL TABLE nodes USING fts5(nid UNINDEXED, title, body, created UNINDEXED)"
+        sc.execute(query)
+        nodes = Node.query.all()
+        for node in nodes:
+            query = "INSERT INTO nodes (nid, title, body, created) VALUES (?, ?, ?, ?)"
+            sc_cur.execute(query, (node.nid, node.title, node.body, node.created))
+        logging.info("Table populated")
+        query = "SELECT * FROM nodes WHERE nodes MATCH ? ORDER BY bm25(nodes)"
+        res = sc_cur.execute(query, (term, ))
+        return res

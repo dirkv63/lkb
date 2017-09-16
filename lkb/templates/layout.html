@@ -36,7 +36,7 @@
                             <li><a href="{{ url_for('main.node', nid=858) }}">Projects</a></li>
                         </ul>
                     </li>
-                     <li>
+                    <li>
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Overview
                             <span class="caret"></span>
@@ -45,6 +45,9 @@
                             <li><a href="{{ url_for('main.nodelist', order='created') }}">New Posts</a></li>
                             <li><a href="{{ url_for('main.nodelist', order='modified') }}">Recently Modified</a></li>
                         </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('main.search') }}">Search</a>
                     </li>
                  </ul>
                 <ul class="nav navbar-nav navbar-right">

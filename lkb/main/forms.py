@@ -40,3 +40,8 @@ class NodeAdd(Form):
     body = CKTextAreaField('Body')
     parent_id = StringField('Parent_ID', render_kw={'readonly': True})
     submit = SubmitField('OK')
+
+
+class Search(Form):
+    search = StringField('Search', validators=[wtv.InputRequired()])
+    submit = SubmitField('OK')

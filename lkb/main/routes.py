@@ -5,7 +5,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from .forms import *
 from . import main
 from lkb.db_model import User
-from lib import my_env
+# from lib import my_env
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -55,20 +55,11 @@ def index():
 def node(nid):
     node_obj = ds.get_node_attribs(nid=nid)
     bc = ds.get_breadcrumb(nid=nid)
-    """
-    params = dict(
-        nid=node_obj.nid,
-        title=node_obj.title,
-        body=my_env.reformat_body(node_obj.body),
-        breadcrumb=bc,
-        children=sorted(node_obj.children, key=lambda child: child.title),
-        created=node_obj.created
-    )
-    """
     params = dict(
         node=node_obj,
         breadcrumb=bc
     )
+    ds.History.add(nid)
     return render_template('node.html', **params)
 
 
@@ -89,8 +80,9 @@ def node_add(pid, nid=None):
                 ds.Node.edit(**node_vals)
                 flash('Node modified', 'info')
             else:
-                ds.Node.add(**node_vals)
+                nid = ds.Node.add(**node_vals)
                 flash('Node added', 'info')
+            return redirect(url_for('main.node', nid=nid))
     else:
         if nid:
             title = "Edit Node"
@@ -137,6 +129,20 @@ def nodelist(order="created"):
         title=title
     )
     return render_template('node_list.html', **params)
+
+
+@main.route('/search', methods=['GET', 'POST'])
+@login_required
+def search():
+    form = Search()
+    if form.validate_on_submit():
+        term = form.search.data
+        params = dict(
+            title="Search Results <small>term</small>",
+            node_list=ds.search_term(term)
+        )
+        return render_template('search_result.html', **params)
+    return render_template('login.html', form=form, hdr='Find Term')
 
 
 @main.errorhandler(404)

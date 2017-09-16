@@ -37,7 +37,7 @@ class TestModelGraph(unittest.TestCase):
         self.assertEqual(node.parent.title, 'Website: tuin')
 
     def test_node_breadcrumb(self):
-        nid=1074
+        nid = 1074
         bc = ds.get_breadcrumb(nid)
         self.assertTrue(isinstance(bc, list))
 
@@ -61,6 +61,9 @@ class TestModelGraph(unittest.TestCase):
         params["body"] = "Now remove special string and add kweepeer instead."
         params["nid"] = nid
         ds.Node.edit(**params)
+        ds.Node.delete(nid)
+        ds.search_term("sql")
+
 
 if __name__ == "__main__":
     unittest.main()
