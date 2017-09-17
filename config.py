@@ -9,8 +9,6 @@ class Config:
     SECRET_KEY = os.urandom(24)
 
     # Config values from flaskrun.ini
-    LOGDIR = "C:\\Temp\\Log"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///C:\\Development\\python\\iaas\\lkb\\data\\lkb.db"
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_ECHO = False
@@ -29,6 +27,8 @@ class DevelopmentConfig(Config):
     LOGLEVEL = "debug"
     # SERVER_NAME = 'localhost:17501'
     SERVER_NAME = 'localhost:50120'
+    LOGDIR = "C:\\Temp\\Log"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///C:\\Development\\python\\iaas\\lkb\\data\\lkb.db"
 
 
 class TestingConfig(Config):
@@ -43,9 +43,11 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     ADMINS = ['dirk@vermeylen.net']
-    LOGLEVEL = "warning"
+    LOGLEVEL = "debug"
     # SERVER_NAME = 'localhost:5008'
     DEBUG = False
+    LOGDIR = "/var/sites/lkb"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///opt/lkb/lkb/data/lkb.db"
 
 
 config = {

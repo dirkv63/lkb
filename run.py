@@ -7,7 +7,11 @@ from waitress import serve
 
 # Run Application
 if __name__ == "__main__":
-    app = create_app('development')
+    if platform.node() == "CAA2GKCOR1":
+        app = create_app('development')
+    else:
+        app = create_app('production')
+
     with app.app_context():
         db.create_all()
         if User.query.filter_by(username='dirk').first() is None:
@@ -16,5 +20,6 @@ if __name__ == "__main__":
             # app.run(host="0.0.0.0", port=17501, debug=True)
             app.run()
         else:
-            port = int(os.environ.get("PORT", 80))
-            serve(app, port=port)
+            app.run()
+            # port = int(os.environ.get("PORT", 8001))
+            # serve(app, listen='localhost:8000')
