@@ -14,6 +14,11 @@
 
 {% block page_content %}
 <div class="row">
+    <ul class="list-inline">
+    {% for item in breadcrumb: %}
+        <li><a href="{{ url_for('main.node', nid=item.nid) }}">{{ item.title }}</a></li>
+    {% endfor %}
+    </ul>
    {{ wtf.quick_form(form) }}
 </div>
 {% endblock %}

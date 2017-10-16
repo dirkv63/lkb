@@ -68,6 +68,7 @@ def node(nid):
 def node_add(pid, nid=None):
     form = NodeAdd()
     title = ""
+    breadcrumb = ds.get_breadcrumb(pid, [ds.get_node_attribs(pid)])
     if request.method == 'POST':
         if form.validate_on_submit():
             node_vals = dict(
@@ -93,13 +94,40 @@ def node_add(pid, nid=None):
         else:
             title = "Create Node"
             form.parent_id.data = pid
-    return render_template('node_add.html', form=form, title=title)
+    return render_template('node_add.html', form=form, title=title, breadcrumb=breadcrumb)
 
 
 @main.route('/node_edit/<pid>/<nid>', methods=['GET', 'POST'])
 @login_required
 def node_edit(pid, nid):
     return node_add(pid, nid)
+
+
+@main.route('/node_outline/<nid>', methods=['GET', 'POST'])
+@login_required
+def node_outline(nid):
+    if request.method == "GET":
+        # Get node information
+        node_obj = ds.get_node_attribs(nid=nid)
+        bc = ds.get_breadcrumb(nid=nid)
+        params = dict(
+            node=node_obj,
+            breadcrumb=bc
+        )
+        # Initialize the form
+        form = NodeOutline(parent=node_obj.parent_id)
+        form.parent.choices = ds.get_tree(exclnid=nid)
+        params['form'] = form
+        # Add node_outline information
+        return render_template('node_outline.html', **params)
+    elif request.method == "POST":
+        form = NodeOutline()
+        params = dict(
+            nid=nid,
+            parent_id=form.parent.data
+        )
+        ds.Node.outline(**params)
+        return redirect(url_for('main.node', nid=nid))
 
 
 @main.route('/node_delete/<nid>', methods=['GET'])

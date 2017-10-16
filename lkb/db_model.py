@@ -1,4 +1,4 @@
-import logging
+# import logging
 import sqlite3
 import time
 from . import db, lm
@@ -41,10 +41,32 @@ class Node(db.Model):
 
     @staticmethod
     def edit(**params):
+        """
+        This method will edit the node title or body.
+
+        :param params: Dictionary with title and body as keys.
+
+        :return:
+        """
         node_inst = db.session.query(Node).filter_by(nid=params['nid']).first()
-        print(node_inst.body)
         node_inst.title = params['title']
         node_inst.body = params['body']
+        node_inst.modified = int(time.time())
+        node_inst.revcnt += 1
+        db.session.commit()
+        return
+
+    @staticmethod
+    def outline(**params):
+        """
+        This method will update the parent for the node. params needs to have nid and parent_id as keys.
+
+        :param params: Dictionary with nid and parent_id as keys.
+
+        :return:
+        """
+        node_inst = db.session.query(Node).filter_by(nid=params['nid']).first()
+        node_inst.parent_id = params['parent_id']
         node_inst.modified = int(time.time())
         node_inst.revcnt += 1
         db.session.commit()
@@ -144,7 +166,8 @@ def load_user(user_id):
 def get_breadcrumb(nid, bc=None):
     """
     This function will get the breadcrumb for the node. It will find the parent's node until root
-    (there is no more node)
+    (there is no more node).
+    For adding a new node, add nid for the new parent and add bc=[current_node].
 
     :param nid:
 
@@ -192,6 +215,38 @@ def get_node_list(order="created"):
     return node_list
 
 
+def get_tree(parent_id=-1, tree=None, level="", exclnid=-1):
+    """
+    This method will get the full node tree sorted on title and depth first in a recursive way
+
+    :param parent_id: ID for the parent
+
+    :param tree: Node tree so far
+
+    :param level: Level so far.
+
+    :param exclnid: Specifies node nid for which descendants do not need to be acquired. For adding a node to
+    another parent, then the node itself and its children should not be included, so exclnid needs to be nid
+    of the node that will be moved.
+
+    :return: list with (nid, label) per node. This is format required by SelectField.
+    """
+    if not tree:
+        tree = []
+    # nodes = Node.query.filter_by(parent_id=parent_id).order_by("title")
+    nodes = Node.query.filter(Node.parent_id == parent_id, Node.nid != exclnid).order_by("title")
+    level += "-"
+    # print("{q}".format(q=str(nodes)))
+    for node in nodes.all():
+        params = (node.nid, "{l} {t}".format(l=level, t=node.title))
+
+        print("{level} {title}".format(level=level, title=node.title))
+        tree.append(params)
+        if node.nid != exclnid:
+            tree = get_tree(parent_id=node.nid, tree=tree, level=level, exclnid=exclnid)
+    return tree
+
+
 def search_term(term):
     """
     Trying to work from https://www.sqlite.org/fts5.html
@@ -202,13 +257,15 @@ def search_term(term):
     with sc:
         sc.row_factory = sqlite3.Row
         sc_cur = sc.cursor()
-        query = "CREATE VIRTUAL TABLE nodes USING fts5(nid UNINDEXED, title, body, created UNINDEXED)"
+        # query = "CREATE VIRTUAL TABLE nodes USING fts5(nid UNINDEXED, title, body, created UNINDEXED)"
+        query = "CREATE VIRTUAL TABLE nodes USING fts4(nid, title, body, created, notindexed=nid, notindexed=created)"
         sc.execute(query)
         nodes = Node.query.all()
         for node in nodes:
             query = "INSERT INTO nodes (nid, title, body, created) VALUES (?, ?, ?, ?)"
             sc_cur.execute(query, (node.nid, node.title, node.body, node.created))
-        logging.info("Table populated")
-        query = "SELECT * FROM nodes WHERE nodes MATCH ? ORDER BY bm25(nodes)"
+        # logging.info("Table populated")
+        # query = "SELECT * FROM nodes WHERE nodes MATCH ? ORDER BY bm25(nodes)"
+        query = "SELECT distinct * FROM nodes WHERE nodes MATCH ?"
         res = sc_cur.execute(query, (term, ))
         return res

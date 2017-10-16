@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, TextAreaField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, TextAreaField, SelectField, HiddenField
 import wtforms.validators as wtv
 
 from wtforms.widgets import TextArea
@@ -38,7 +38,13 @@ class NodeAdd(Form):
     # form_overrides = dict(body=CKTextAreaField)
     title = StringField('Title')
     body = CKTextAreaField('Body')
-    parent_id = StringField('Parent_ID', render_kw={'readonly': True})
+    parent_id = HiddenField('Parent_ID', render_kw={'readonly': True})
+    submit = SubmitField('OK')
+
+
+
+class NodeOutline(Form):
+    parent = SelectField("Select Parent: ", coerce=str)
     submit = SubmitField('OK')
 
 

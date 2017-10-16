@@ -53,7 +53,7 @@ class TestModelGraph(unittest.TestCase):
             parent_id=854
         )
         nid = ds.Node.add(**params)
-        print("Node: {nid}".format(nid=nid))
+        # print("Node: {nid}".format(nid=nid))
         node = ds.get_node_attribs(nid)
         self.assertTrue(isinstance(node, ds.Node))
         self.assertTrue('Abracadabra' in node.body)
@@ -62,8 +62,18 @@ class TestModelGraph(unittest.TestCase):
         params["nid"] = nid
         ds.Node.edit(**params)
         ds.Node.delete(nid)
-        ds.search_term("sql")
+        # res = ds.search_term("sql")
+        # print("Key: {k}".format(k=res.description))
 
+    def test_get_tree(self):
+        res = ds.get_tree()
+        self.assertTrue(isinstance(res, list))
+        lr = len(res)
+        self.assertGreater(lr, 1750)
+        # Now exclude Verkiezingen
+        res = ds.get_tree(exclnid=732)
+        self.assertTrue(isinstance(res, list))
+        self.assertGreater(lr, len(res))
 
 if __name__ == "__main__":
     unittest.main()

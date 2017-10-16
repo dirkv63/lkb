@@ -87,8 +87,7 @@ def reformat_body(string, is_xhtml=True):
     """
     # First wrap URLs in href.
     # Only wrap URLs if there is no href in the body text
-    if not ('href' in string.lower()):
-        string = fix_urls(string)
+    string = altfix_urls(string)
     # Then replace \n with <br>
     # TODO: add a function that collects strings from within the html DOM domain, so that \n surrounding htlm (as in
     # TODO: <table> is not touched.
@@ -100,6 +99,17 @@ def reformat_body(string, is_xhtml=True):
 
 def children_sorted(children):
     return sorted(children, key=lambda child: child.title)
+
+
+URL_REGEX = re.compile(r'''((?:mailto:|ftp://|http://|https://)[^ <>'"{}|\\^`[\]]*)''')
+
+
+def altfix_urls(text):
+    if not ('href' in text.lower()):
+        return URL_REGEX.sub(r'<a href="\1">\1</a>', text)
+    else:
+        return text
+
 
 def fix_urls(text):
     """
@@ -119,7 +129,7 @@ def fix_urls(text):
                       (/?| # could be just the domain name (maybe w/ slash)
                 [^ \n\r"]+ # or stuff then space, newline, tab, quote
                     [\w/]) # resource name ends in alphanumeric or slash
-         (?=[\s\.,>)'"\]]) # assert: followed by white or clause ending
+         (?=[\s.,>)'"\]]) # assert: followed by white or clause ending
                          ) # end of match group
                            ''')
     pat_email = re.compile(r'''

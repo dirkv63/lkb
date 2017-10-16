@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block page_content %}
 <div class="row">
@@ -11,24 +12,12 @@
         {{ node.title }}
         <small>{{ node.created|datestamp }}</small>
     </h1>
-    <a href="{{ url_for('main.node_edit', nid=node.nid, pid=node.parent_id) }}" class="btn btn-default" role="button">
-        Edit
-    </a>
-    <a href="{{ url_for('main.node_add', pid=node.nid) }}" class="btn btn-default" role="button">
-        Add
-    </a>
-    <a href="{{ url_for('main.node_outline', nid=node.nid) }}" class="btn btn-default" role="button">
-        Outline
-    </a>
-    {% if node.children|length == 0 %}
-        <a href="{{ url_for('main.node_delete', nid=node.nid) }}" class="btn btn-default" role="button">Delete</a>
-    {% endif %}
-    <hr>
     {% if node.modified < 1505819143 %}
         {{ node.body|reformat_body|safe }}
     {% else %}
         {{ node.body|fix_urls|safe }}
     {% endif %}
+    {{ wtf.quick_form(form) }}
     <ul>
         {% for child in node.children|children_sorted %}
         <li><a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>

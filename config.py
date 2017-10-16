@@ -28,26 +28,29 @@ class DevelopmentConfig(Config):
     # SERVER_NAME = 'localhost:17501'
     SERVER_NAME = 'localhost:50120'
     LOGDIR = "C:\\Temp\\Log"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///C:\\Development\\python\\iaas\\lkb\\data\\lkb.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///C:\\Development\\python\\lkb\\lkb\\data\\lkb.db"
 
 
 class TestingConfig(Config):
     DEBUG = False
     # Set Loglevel to warning or worse (error, fatal) for readability
-    LOGLEVEL = "error"
+    LOGLEVEL = "info"
     TESTING = True
     SECRET_KEY = 'The Secret Test Key!'
     WTF_CSRF_ENABLED = False
     SERVER_NAME = 'localhost:5999'
+    LOGDIR = "C:\\Temp\\Log"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///C:\\Development\\python\\lkb\\lkb\\data\\lkb.db"
 
 
 class ProductionConfig(Config):
     ADMINS = ['dirk@vermeylen.net']
     LOGLEVEL = "debug"
     # SERVER_NAME = 'localhost:5008'
-    DEBUG = False
+    DEBUG = True
     LOGDIR = "/var/sites/lkb"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///opt/lkb/lkb/data/lkb.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:////home/dirk/lkb/lkb/data/lkb.db"
+    # SERVER_NAME = '81.4.104.137:8181'
 
 
 config = {

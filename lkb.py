@@ -20,6 +20,5 @@ if __name__ == "__main__":
             # app.run(host="0.0.0.0", port=17501, debug=True)
             app.run()
         else:
-            app.run()
-            # port = int(os.environ.get("PORT", 8001))
-            # serve(app, listen='localhost:8000')
+            # serve(app, port=8000)
+            serve(app, listen='127.0.0.1:8000')
