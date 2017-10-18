@@ -1,0 +1,7 @@
+{% macro bc(breadcrumb) %}
+    <ol class="breadcrumb">
+    {% for item in breadcrumb: %}
+        <li class="breadcrumb-item"><a href="{{ url_for('main.node', nid=item.nid) }}">{{ item.title }}</a></li>
+    {% endfor %}
+    </ol>
+{% endmacro %}

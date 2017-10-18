@@ -1,12 +1,9 @@
 {% extends "layout.html" %}
+{% import "macros.html" as macros %}
 
 {% block page_content %}
 <div class="row">
-    <ul class="list-inline">
-    {% for item in breadcrumb: %}
-        <li><a href="{{ url_for('main.node', nid=item.nid) }}">{{ item.title }}</a></li>
-    {% endfor %}
-    </ul>
+    {{ macros.bc(breadcrumb) }}
     <h1>
         {{ node.title }}
         <small>{{ node.created|datestamp }}</small>

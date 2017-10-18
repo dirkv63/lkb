@@ -240,7 +240,7 @@ def get_tree(parent_id=-1, tree=None, level="", exclnid=-1):
     for node in nodes.all():
         params = (node.nid, "{l} {t}".format(l=level, t=node.title))
 
-        print("{level} {title}".format(level=level, title=node.title))
+        # print("{level} {title}".format(level=level, title=node.title))
         tree.append(params)
         if node.nid != exclnid:
             tree = get_tree(parent_id=node.nid, tree=tree, level=level, exclnid=exclnid)
