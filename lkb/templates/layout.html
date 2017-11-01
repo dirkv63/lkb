@@ -8,7 +8,7 @@
 {% block title %}LKB{% endblock %}
 
 {% block navbar %}
-    <nav class="navbar navbar-inverse" role="navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
@@ -113,7 +113,11 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-
-    {% block page_content %}{% endblock %}
 </div>
+
+<div class="container">
+    {% block page_content %}
+    {% endblock %}
+</div>
+
 {% endblock %}

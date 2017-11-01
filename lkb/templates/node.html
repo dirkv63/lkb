@@ -4,32 +4,81 @@
 {% block page_content %}
 <div class="row">
     {{ macros.bc(breadcrumb) }}
-    <h1>
-        {{ node.title }}
-        <small>{{ node.created|datestamp }}</small>
-    </h1>
-    <a href="{{ url_for('main.node_edit', nid=node.nid, pid=node.parent_id) }}" class="btn btn-default" role="button">
-        Edit
-    </a>
-    <a href="{{ url_for('main.node_add', pid=node.nid) }}" class="btn btn-default" role="button">
-        Add
-    </a>
-    <a href="{{ url_for('main.node_outline', nid=node.nid) }}" class="btn btn-default" role="button">
-        Outline
-    </a>
-    {% if node.children|length == 0 %}
-        <a href="{{ url_for('main.node_delete', nid=node.nid) }}" class="btn btn-default" role="button">Delete</a>
-    {% endif %}
-    <hr>
-    {% if node.modified < 1505819143 %}
-        {{ node.body|reformat_body|safe }}
-    {% else %}
-        {{ node.body|fix_urls|safe }}
-    {% endif %}
-    <ul>
-        {% for child in node.children|children_sorted %}
-        <li><a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>
-        {% endfor %}
-    </ul>
+</div>
+<div class="row">
+    <div class="col-sm-9">
+        <h1>
+            {{ node.title }}
+        </h1>
+        {% if node.modified < 1505819143 %}
+            {{ node.body|reformat_body|safe }}
+        {% else %}
+            {{ node.body|fix_urls|safe }}
+        {% endif %}
+        {% if node.children %}
+        <hr>
+        <ul>
+            {% for child in node.children|children_sorted %}
+            <li><a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    <div class="col-sm-3 text-center">
+        <h3>Actions</h3>
+        <hr>
+        <div class="btn-group-vertical" role="group" aria-label="Actions">
+            <a href="{{ url_for('main.node_edit', nid=node.nid, pid=node.parent_id) }}" class="btn btn-default" role="button">
+                Edit
+            </a>
+            <a href="{{ url_for('main.node_add', pid=node.nid) }}" class="btn btn-default" role="button">
+                Add
+            </a>
+            <a href="{{ url_for('main.node_outline', nid=node.nid) }}" class="btn btn-default" role="button">
+                Outline
+            </a>
+            {% if node.children|length == 0 %}
+                <a href="{{ url_for('main.node_delete', nid=node.nid) }}" class="btn btn-default" role="button">Delete</a>
+            {% endif %}
+        </div>
+        <hr>
+        <h3>Information</h3>
+        <hr>
+        <table class="table table-striped table-condensed">
+            <tr>
+                <td class="text-right">Created:</td>
+                <td class="text-left">
+                    {% if node.created < 1267693808 %}
+                        <i>in legacy system</i>
+                    {% else %}
+                        {{ node.created|datestamp }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">Last Modified:</td>
+                <td class="text-left">
+                    {% if node.modified < 1267693808 %}
+                        <i>in legacy system</i>
+                    {% else %}
+                        {{ node.modified|datestamp}}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td class="text-right">Revision Count:</td>
+                <td class="text-left">{{ node.revcnt }}</td>
+            </tr>
+            {% if node.modified < 1505819143 %}
+                <tr>
+                    <td colspan="2">
+                        <a href="{{ url_for('main.node_edit', nid=node.nid, pid=node.parent_id) }}" class="btn btn-default" role="button">
+                            Legacy Format!
+                        </a>
+                    </td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
 </div>
 {% endblock %}
