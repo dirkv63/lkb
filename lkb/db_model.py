@@ -211,7 +211,7 @@ def get_node_list(order="created"):
     node_order = Node.created.desc()
     if order == "modified":
         node_order = Node.modified.desc()
-    node_list = Node.query.order_by(node_order).limit(15).all()
+    node_list = Node.query.order_by(node_order).limit(20).all()
     return node_list
 
 

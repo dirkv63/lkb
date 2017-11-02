@@ -163,7 +163,7 @@ def datestamp(epoch):
 
     :return: Date in format 'DD/MM/YY HH:MM
     """
-    return datetime.fromtimestamp(epoch).strftime('%d/%m/%y %H:%M')
+    return datetime.fromtimestamp(epoch).strftime('%d/%m/%y')
 
 
 class LoopInfo:
