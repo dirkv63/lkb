@@ -17,9 +17,10 @@
         </div>
         {% if node.children %}
         <hr>
-        <ul>
+        <ul class="childrenlist">
             {% for child in node.children|children_sorted %}
-            <li><a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>
+            <li>{% if child.children %} &raquo; {% else %} &bull; {% endif %}
+                <a href="{{ url_for('main.node', nid=child.nid) }}">{{ child.title }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}

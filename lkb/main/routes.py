@@ -6,6 +6,7 @@ from .forms import *
 from . import main
 from lkb.db_model import User
 # from lib import my_env
+from config import *
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -138,9 +139,10 @@ def node_delete(nid):
     return index()
 
 
-@main.route('/nodelist/<order>', methods=['GET'])
+@main.route('/nodelist/<order>/', methods=['GET', 'POST'])
+@main.route('/nodelist/<order>/<int:page>/', methods=['GET', 'POST'])
 @login_required
-def nodelist(order="created"):
+def nodelist(order="created", page=1):
     """
     Returns the nodes in an ordered list.
 
@@ -151,10 +153,11 @@ def nodelist(order="created"):
     title = "Recent Nodes"
     if order == "modified":
         title = "Last Modified"
-    node_list = ds.get_node_list(order)
+    node_list = ds.get_node_list(order).paginate(page, ITEMS_PER_PAGE, False)
     params = dict(
         node_list=node_list,
-        title=title
+        title=title,
+        order=order
     )
     return render_template('node_list.html', **params)
 

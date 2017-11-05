@@ -12,7 +12,7 @@
                 <th>Title</th>
                 <th>Category</th>
             </tr>
-            {% for node in node_list %}
+            {% for node in node_list.items %}
             <tr>
                 <td>{{ node.created|datestamp }}</td>
                 <td>
@@ -24,6 +24,16 @@
             </tr>
             {% endfor %}
         </table>
+        {% if node_list.has_prev %}
+            <a href="{{ url_for('main.nodelist', order=order, page=node_list.prev_num) }}">&lt;&lt; Newer nodes</a>
+        {% else %}
+            &lt;&lt; Newer nodes
+        {% endif %} |
+        {% if node_list.has_next %}
+            <a href="{{ url_for('main.nodelist', order=order, page=node_list.next_num) }}">Older nodes &gt;&gt;</a>
+        {% else %}
+            Older nodes &gt;&gt;
+        {% endif %}
     </div>
     <div class="col-md-3 text-center">
         <div class="hidden-sm hidden-xs marsu">

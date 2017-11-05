@@ -206,12 +206,12 @@ def get_node_list(order="created"):
 
     :param order: This specifies the order for the list. Options: created (default), modified
 
-    :return:
+    :return: Query object with nodes according to sort sequence.
     """
     node_order = Node.created.desc()
     if order == "modified":
         node_order = Node.modified.desc()
-    node_list = Node.query.order_by(node_order).limit(20).all()
+    node_list = Node.query.order_by(node_order)
     return node_list
 
 

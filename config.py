@@ -4,6 +4,8 @@ import os
 
 # Be careful: Variable names need to be UPPERCASE
 
+# pagination
+ITEMS_PER_PAGE = 15
 
 class Config:
     SECRET_KEY = os.urandom(24)

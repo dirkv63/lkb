@@ -18,3 +18,4 @@ a:visited 		{ color: #800080; }
 .actions        { padding: 20px; background-color: #33CAFF }
 .info           { padding: 40px; background-color: #33A8FF }
 .nodecontent    { padding: 25px 0px 20px }
+.childrenlist   { list-style: none }
