@@ -167,13 +167,14 @@ def nodelist(order="created", page=1):
 @login_required
 def search():
     form = Search()
-    if form.validate_on_submit():
-        term = form.search.data
-        params = dict(
-            title="Search Results <small>{term}</small>".format(term=term),
-            node_list=ds.search_term(term)
-        )
-        return render_template('search_result.html', **params)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            term = form.search.data
+            params = dict(
+                title="<small>Search Results for:</small> {term}".format(term=term),
+                node_list=ds.search_term(term)
+            )
+            return render_template('search_result.html', **params)
     return render_template('login.html', form=form, hdr='Find Term')
 
 
