@@ -58,7 +58,8 @@ def node(nid):
     bc = ds.get_breadcrumb(nid=nid)
     params = dict(
         node=node_obj,
-        breadcrumb=bc
+        breadcrumb=bc,
+        form=Search()
     )
     ds.History.add(nid)
     return render_template('node.html', **params)
@@ -169,7 +170,7 @@ def search():
     if form.validate_on_submit():
         term = form.search.data
         params = dict(
-            title="Search Results <small>term</small>",
+            title="Search Results <small>{term}</small>".format(term=term),
             node_list=ds.search_term(term)
         )
         return render_template('search_result.html', **params)
