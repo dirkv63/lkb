@@ -106,7 +106,7 @@ URL_REGEX = re.compile(r'''((?:mailto:|ftp://|http://|https://)[^ <>'"{}|\\^`[\]
 
 def altfix_urls(text):
     if not ('href' in text.lower()):
-        return URL_REGEX.sub(r'<a href="\1">\1</a>', text)
+        return URL_REGEX.sub(r'<a target="_blank" href="\1">\1</a>', text)
     else:
         return text
 

@@ -59,7 +59,7 @@ def node(nid):
     params = dict(
         node=node_obj,
         breadcrumb=bc,
-        form=Search()
+        searchForm=Search()
     )
     ds.History.add(nid)
     return render_template('node.html', **params)
@@ -158,7 +158,8 @@ def nodelist(order="created", page=1):
     params = dict(
         node_list=node_list,
         title=title,
-        order=order
+        order=order,
+        searchForm=Search()
     )
     return render_template('node_list.html', **params)
 

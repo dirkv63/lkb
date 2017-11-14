@@ -50,4 +50,4 @@ class NodeOutline(Form):
 
 class Search(Form):
     search = StringField('Search', validators=[wtv.InputRequired()])
-    submitSearch = SubmitField('Go!')
+    submit = SubmitField('Go!')
