@@ -13,4 +13,5 @@ __pycache__/
 */data/*
 */*/index/*
 temp/*
-client_secret.json
+client_secrets.json
+settings.yaml
