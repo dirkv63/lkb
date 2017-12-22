@@ -258,12 +258,18 @@ def search_term(term):
         sc.row_factory = sqlite3.Row
         sc_cur = sc.cursor()
         # query = "CREATE VIRTUAL TABLE nodes USING fts5(nid UNINDEXED, title, body, created UNINDEXED)"
-        query = "CREATE VIRTUAL TABLE nodes USING fts4(nid, title, body, created, notindexed=nid, notindexed=created)"
+        query = "CREATE VIRTUAL TABLE nodes USING fts4(nid, title, body, created, parent," \
+                "notindexed=nid, notindexed=created, notindexed=parent)"
         sc.execute(query)
         nodes = Node.query.all()
         for node in nodes:
-            query = "INSERT INTO nodes (nid, title, body, created) VALUES (?, ?, ?, ?)"
-            sc_cur.execute(query, (node.nid, node.title, node.body, node.created))
+            if node.parent_id > 0:
+                parent = get_node_attribs(node.parent_id)
+                category = parent.title
+            else:
+                category = "Main"
+            query = "INSERT INTO nodes (nid, title, body, created, parent) VALUES (?, ?, ?, ?, ?)"
+            sc_cur.execute(query, (node.nid, node.title, node.body, node.created, category))
         # logging.info("Table populated")
         # query = "SELECT * FROM nodes WHERE nodes MATCH ? ORDER BY bm25(nodes)"
         query = "SELECT distinct * FROM nodes WHERE nodes MATCH ?"

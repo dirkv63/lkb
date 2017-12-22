@@ -9,12 +9,16 @@
         <tr>
             <th>Post Data</th>
             <th>Title</th>
+            <th>Category</th>
         </tr>
         {% for node in node_list %}
         <tr>
             <td>{{ node['created']|datestamp }}</td>
             <td>
                 <a href=" {{ url_for('main.node', nid=node['nid']) }}">{{ node.title }}</a>
+            </td>
+            <td>
+                {{ node['parent'] }}
             </td>
         </tr>
         {% endfor %}
