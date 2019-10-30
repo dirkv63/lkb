@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import StringField, SubmitField, PasswordField, BooleanField, TextAreaField, SelectField, HiddenField
+from wtforms.fields import BooleanField, HiddenField, IntegerField, PasswordField, SelectField, StringField, \
+    SubmitField, TextAreaField
 import wtforms.validators as wtv
 
 from wtforms.widgets import TextArea
@@ -42,9 +43,8 @@ class NodeAdd(Form):
     submit = SubmitField('OK')
 
 
-
 class NodeOutline(Form):
-    parent = SelectField("Select Parent: ", coerce=str)
+    parent = IntegerField("Parent Node ID: ", validators=[wtv.InputRequired()])
     submit = SubmitField('OK')
 
 

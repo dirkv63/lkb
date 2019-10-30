@@ -3,7 +3,8 @@ This procedure will test the classes of the models_graph.
 """
 
 import unittest
-from lkb import create_app, db_model as ds
+from lkb import create_app
+from lkb.lib import db_model as ds
 from lib import my_env
 
 

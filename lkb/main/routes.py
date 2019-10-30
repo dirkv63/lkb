@@ -1,12 +1,13 @@
 # import logging
-import lkb.db_model as ds
+import os
+import lkb.lib.db_model as ds
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_required, login_user, logout_user, current_user
 from .forms import *
 from . import main
-from lkb.db_model import User
-# from lib import my_env
-from config import *
+from lkb.lib.db_model import User
+
+items_per_page = int(os.environ["ITEMS_PER_PAGE"])
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -108,6 +109,7 @@ def node_edit(pid, nid):
 @main.route('/node_outline/<nid>', methods=['GET', 'POST'])
 @login_required
 def node_outline(nid):
+    form = NodeOutline()
     if request.method == "GET":
         # Get node information
         node_obj = ds.get_node_attribs(nid=nid)
@@ -117,19 +119,22 @@ def node_outline(nid):
             breadcrumb=bc
         )
         # Initialize the form
-        form = NodeOutline(parent=node_obj.parent_id)
-        form.parent.choices = ds.get_tree(exclnid=nid)
+        # form = NodeOutline(parent=node_obj.parent_id)
+        # form.parent.choices = ds.get_tree(exclnid=nid)
         params['form'] = form
         # Add node_outline information
         return render_template('node_outline.html', **params)
     elif request.method == "POST":
-        form = NodeOutline()
-        params = dict(
-            nid=nid,
-            parent_id=form.parent.data
-        )
-        ds.Node.outline(**params)
-        return redirect(url_for('main.node', nid=nid))
+        if isinstance(form.parent.data, int):
+            params = dict(
+                nid=nid,
+                parent_id=form.parent.data
+            )
+            ds.Node.outline(**params)
+            return redirect(url_for('main.node', nid=nid))
+        else:
+            flash("Parent ID must be Integer!", 'error')
+            return redirect(url_for('main.node_outline', nid=nid))
 
 
 @main.route('/node_delete/<nid>', methods=['GET'])
@@ -148,13 +153,13 @@ def nodelist(order="created", page=1):
     Returns the nodes in an ordered list.
 
     :param order: Specifies the order: created (default, most recent first), modified (most recent modified first)
-
+    :param page: Start page
     :return:
     """
     title = "Recent Nodes"
     if order == "modified":
         title = "Last Modified"
-    node_list = ds.get_node_list(order).paginate(page, ITEMS_PER_PAGE, False)
+    node_list = ds.get_node_list(order).paginate(page, items_per_page, False)
     params = dict(
         node_list=node_list,
         title=title,

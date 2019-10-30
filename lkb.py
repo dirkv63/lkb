@@ -1,7 +1,6 @@
 import platform
-import os
 from lkb import create_app, db
-from lkb.db_model import User
+from lkb.lib.db_model import User
 from waitress import serve
 
 

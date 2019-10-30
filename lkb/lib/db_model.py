@@ -1,12 +1,10 @@
-# import logging
 import sqlite3
 import time
-from . import db, lm
+from lkb import db, lm
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.orm.exc import NoResultFound
 
 
 class Node(db.Model):
@@ -45,7 +43,6 @@ class Node(db.Model):
         This method will edit the node title or body.
 
         :param params: Dictionary with title and body as keys.
-
         :return:
         """
         node_inst = db.session.query(Node).filter_by(nid=params['nid']).first()
@@ -62,7 +59,6 @@ class Node(db.Model):
         This method will update the parent for the node. params needs to have nid and parent_id as keys.
 
         :param params: Dictionary with nid and parent_id as keys.
-
         :return:
         """
         node_inst = db.session.query(Node).filter_by(nid=params['nid']).first()
@@ -136,9 +132,7 @@ def init_session(dbconn, echo=False):
     This function configures the connection to the database and returns the session object.
 
     :param dbconn: Name of the sqlite3 database.
-
     :param echo: True / False, depending if echo is required. Default: False
-
     :return: session object.
     """
     conn_string = "sqlite:///{db}".format(db=dbconn)
@@ -170,9 +164,7 @@ def get_breadcrumb(nid, bc=None):
     For adding a new node, add nid for the new parent and add bc=[current_node].
 
     :param nid:
-
     :param bc: Breadcrumb list so far
-
     :return: bc
     """
     if not bc:
@@ -193,7 +185,6 @@ def get_node_attribs(nid):
     This method will collect the attributes required to display a node.
 
     :param nid: Node ID for the node
-
     :return: Dictionary with the attributes required to display the node.
     """
     node = Node.query.filter_by(nid=nid).one()
@@ -205,7 +196,6 @@ def get_node_list(order="created"):
     This method will return the most recent posts.
 
     :param order: This specifies the order for the list. Options: created (default), modified
-
     :return: Query object with nodes according to sort sequence.
     """
     node_order = Node.created.desc()
@@ -220,15 +210,11 @@ def get_tree(parent_id=-1, tree=None, level="", exclnid=-1):
     This method will get the full node tree sorted on title and depth first in a recursive way
 
     :param parent_id: ID for the parent
-
     :param tree: Node tree so far
-
     :param level: Level so far.
-
     :param exclnid: Specifies node nid for which descendants do not need to be acquired. For adding a node to
     another parent, then the node itself and its children should not be included, so exclnid needs to be nid
     of the node that will be moved.
-
     :return: list with (nid, label) per node. This is format required by SelectField.
     """
     if not tree:
@@ -238,7 +224,7 @@ def get_tree(parent_id=-1, tree=None, level="", exclnid=-1):
     level += "-"
     # print("{q}".format(q=str(nodes)))
     for node in nodes.all():
-        params = (node.nid, "{l} {t}".format(l=level, t=node.title))
+        params = (node.nid, "{} {}".format(level, node.title))
 
         # print("{level} {title}".format(level=level, title=node.title))
         tree.append(params)
@@ -250,6 +236,7 @@ def get_tree(parent_id=-1, tree=None, level="", exclnid=-1):
 def search_term(term):
     """
     Trying to work from https://www.sqlite.org/fts5.html
+
     :param term:
     :return:
     """
